@@ -1,12 +1,12 @@
 # kuku-promo-finder
 
-Reads the timestamped screenplays of a microdrama and returns ranked 20-60 second promos: for each one,
-the episode and exact start/end of every segment, the hook, the cliffhanger, one line on why it works,
-and why it should (or should not) be posted first. An editor reviews the list in a single HTML page
-instead of watching every episode.
+This tool reads the timestamped screenplays of a microdrama and suggests ranked promos of 20 to 60
+seconds. For each one you get the episode and exact start and end of every segment, the hook, the
+cliffhanger, a line on why it works, and why it should (or shouldn't) be posted first. An editor then
+goes through the list on one HTML page instead of watching every episode.
 
-Built for the Kuku AI Generalist assignment, Problem 1. The input pack (Kuku's screenplays) is
-confidential and **not** in this repo; the tests use a two-episode sample show written for the repo.
+I built it for the Kuku AI Generalist assignment (Problem 1). Kuku's screenplays are confidential, so
+they are not in this repo. The tests use a short two-episode sample show I wrote for it.
 
 ## Run it
 
@@ -55,31 +55,29 @@ mock server. The `anthropic` adapter is not tested. Neither was run live for the
 
 ## How it works
 
-```
-screenplays ─► parse (code) ─► mine each episode (model) ─► check + repair (code) ──┐
-                                   │  ▲ problems code can't fix go back once        │
-                                   ▼  │                                             ▼
-                               beats ─► cross-episode montages (model) ─► fresh-viewer cold read (cheap model)
-                                                                              │
-                         review.html (human approves) ◄─ rank + de-duplicate (code)
-```
+1. Code parses the screenplays into numbered blocks (dialogue, action, camera, sound).
+2. A model reads each episode and proposes up to three promos, plus a few short "beats" that could
+   work in a montage. It refers to script blocks by ID (like `b014`) and never writes a timestamp.
+3. Code turns the IDs into cut points. A cut never splits a line of dialogue, and it snaps to the
+   episode's own camera cuts. Code also enforces the rules: 20 to 60 seconds, a hook within 3 seconds
+   (it trims a slow opening itself when it can) and an ending on the cliffhanger (it trims a tail
+   that plays past it). Anything it can't fix goes back to the model once, with the exact problem.
+4. The model joins beats from different episodes into a few montages, as long as the result stays
+   true to the story.
+5. A second, cheaper model plays a viewer who has never seen the show. It reads only the cut clip and
+   says what it understood, what confused it and what it wants to know next.
+6. Code removes near-duplicates and ranks what's left.
+7. An editor approves or rejects each promo in `review.html`. Nothing is posted automatically.
 
-* **Code** does everything checkable. The model names blocks by ID (`b014`) and never writes a
-  timestamp; code turns IDs into cut points that never split a line of dialogue and snap to the
-  episode's own camera cuts. Code enforces 20-60 s, the hook within 3 s (it trims a slow opening
-  itself when it can), and the end on the cliffhanger (it trims a tail that plays past it). It also
-  removes duplicates and does the ranking arithmetic.
-* **The model** does judgement: which moment stops a scroll, where it is still unresolved, and whether
-  a stranger would follow it.
-* **A second, cheaper model** plays a viewer who has never seen the show and reads only the cut clip.
-  Its scores feed the ranking and its confusion notes go to the editor.
-* **A human** approves or rejects in `review.html`. Nothing is posted automatically.
+The split is simple: code does everything that can be checked, the model does the judgement (which
+moment stops a scroll, where it is still unresolved, whether a stranger would follow it), and a person
+makes the final call.
 
-Ranking is the geometric mean of hook, cliffhanger and stands-alone, so a promo cannot hide a weak
-criterion behind two strong ones. Each criterion averages the mining model's score and the fresh
-viewer's. Problems that code finds or the viewer reports (for example a contradiction) cost 10% each;
-early episodes get a small bonus, switchable with `--early-bonus`. The post-first list allows at most
-two promos per episode.
+The rank is the geometric mean of the hook, cliffhanger and stand-alone scores, so a promo can't hide
+one weak score behind two strong ones. Each score averages the first model's rating and the fresh
+viewer's. Each problem that code finds or the viewer reports (a contradiction, for example) costs 10%,
+and early episodes get a small bonus that `--early-bonus` controls. The post-first list takes at most
+two promos from any one episode.
 
 ## Evaluate
 
@@ -88,9 +86,10 @@ python eval/evaluate.py SHOW.zip --run outputs/run/promos.json --alt outputs/alt
        --judge claude-cli:claude-opus-5-5 --out outputs/eval
 ```
 
-The script blind-judges each episode's best promo against the first 40 s, the last 40 s and the
-rules-only pick, re-judges a sample with A and B swapped to check position bias, compares two models'
-picks, and runs rule checks in code. Results go to `summary.md`.
+This has a separate model judge, blind, each episode's best promo against three shortcuts: the
+episode's first 40 seconds, its last 40 seconds and the best window found by rules alone. It re-judges
+a sample with the two clips swapped to check for order bias, compares the picks of two models, and runs
+the rule checks in code. Results go to `summary.md`.
 
 ## Tests
 
@@ -100,9 +99,9 @@ python -m unittest discover -s tests -v
 
 ## Known limits
 
-* It reads the script, not the video. A hook that exists only in a camera description may not read on
-  screen; those promos are marked for the editor to check.
-* Cross-episode montages can mislead (two weddings that look like one). The fresh-viewer check catches
-  some of these; an editor must approve every montage.
-* The scores are model judgements, not audience data. Before the ranking is trusted, its weights
-  should be tuned on real hold, completion and click-through rates.
+- It reads the script, not the video. A hook that exists only in a camera description may not come
+  across on screen, so those promos are flagged for the editor.
+- Cross-episode montages can mislead (two different weddings can look like one). The fresh-viewer
+  check catches some of these, but an editor should approve every montage.
+- The scores are model judgements, not audience data. The ranking weights should be tuned on real
+  hold, completion and click-through rates before anyone relies on them.
