@@ -1,0 +1,58 @@
+EPISODE NUMBER: Episode 2
+EPISODE LOGLINE: Mara follows the stranger into the storm and learns he holds a debt her father never repaid.
+CONTINUITY NOTES: Continues from Episode 1. Uses upper-case field names and an alias in a label on purpose, to test the parser.
+
+--- SCRIPT START ---
+
+SCENE 01
+SCENE HEADING: EXT. HARBOUR – NIGHT
+SCENE START: 00:00.00
+SCENE END: 00:30.00
+
+ACTIONS AND DIALOGUE:
+
+**CAMERA:**
+Start: (00:00.00) | End: (00:05.00)
+Rain lashes the harbour as Mara runs after the stranger.
+
+**MARA (Breathless):**
+Start: (00:01.00) | End: (00:03.00)
+"Wait! Who are you?"
+
+**CAMERA:**
+Start: (00:05.00) | End: (00:10.00)
+Close on the stranger turning, rain running off his hat.
+
+**WET-COAT STRANGER (Elias) (Grim):**
+Start: (00:05.50) | End: (00:09.00)
+"The man your father owed his life to."
+
+**CAMERA:**
+Start: (00:10.00) | End: (00:16.00)
+Theo runs out of the hall with two guards.
+
+**THEO (O.S.) (Shouting):**
+Start: (00:10.50) | End: (00:12.50)
+"Mara, get away from him!"
+
+**ACTION:**
+Start: (00:12.00) | End: (00:15.00)
+The stranger steps between Mara and the guards and draws a knife.
+
+**CAMERA:**
+Start: (00:16.00) | End: (00:22.00)
+Low angle on the stranger holding the deed over a lantern flame.
+
+**WET-COAT STRANGER (Elias) (Cold):**
+Start: (00:16.50) | End: (00:20.00)
+"Touch her and the deed burns with you."
+
+**CAMERA:**
+Start: (00:22.00) | End: (00:30.00)
+Close-up on Mara, rain and tears on her face. Lightning. Cut to black.
+
+**MARA (Whispering):**
+Start: (00:22.50) | End: (00:25.00)
+"Then burn it."
+
+--- SCRIPT END ---

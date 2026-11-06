@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promo review</title>
+<style>
+  :root { --ink:#1d2330; --mute:#5b6475; --line:#e3e6ec; --bg:#f6f7f9; --card:#fff; --accent:#1857a4;
+          --ok:#1f7a45; --warn:#9a5b00; --bad:#a3262a; --hook:#fff3c4; --first3:#fdf8e6; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 "Segoe UI", system-ui, -apple-system, sans-serif; color:var(--ink); background:var(--bg); }
+  header { background:#1c2331; color:#fff; padding:18px 24px; }
+  header h1 { margin:0 0 4px; font-size:20px; font-weight:600; }
+  header p { margin:0; color:#c9d1e0; font-size:13px; }
+  .bar { position:sticky; top:0; z-index:5; display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+         padding:10px 24px; background:#fff; border-bottom:1px solid var(--line); }
+  .bar button, .bar input { font:inherit; border:1px solid var(--line); background:#fff; border-radius:6px; padding:5px 10px; cursor:pointer; }
+  .bar button[aria-pressed="true"] { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .bar input { cursor:text; min-width:220px; }
+  .bar .spacer { flex:1; }
+  .bar .count { color:var(--mute); font-size:13px; }
+  main { max-width:1100px; margin:0 auto; padding:16px 24px 60px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:0 0 14px; }
+  .card.approved { border-left:5px solid var(--ok); } .card.rejected { border-left:5px solid var(--bad); opacity:.75; }
+  .card.maybe { border-left:5px solid var(--warn); }
+  .top { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; }
+  .rank { font-weight:700; color:var(--accent); font-size:16px; }
+  .title { font-weight:600; font-size:16px; }
+  .tag { font-size:11px; text-transform:uppercase; letter-spacing:.04em; padding:2px 7px; border-radius:20px; background:#eef1f6; color:var(--mute); }
+  .tag.post { background:#e7f0fb; color:var(--accent); font-weight:700; }
+  .tag.montage { background:#f1ebfa; color:#5b3a8c; }
+  .score { margin-left:auto; color:var(--mute); font-size:13px; }
+  .segs { display:flex; flex-wrap:wrap; gap:10px; margin:8px 0 4px; }
+  .seg { border:1px solid var(--line); border-radius:8px; padding:6px 10px; min-width:230px; }
+  .seg b { font-variant-numeric:tabular-nums; }
+  .track { position:relative; height:6px; background:#eef1f6; border-radius:3px; margin-top:6px; }
+  .track span { position:absolute; top:0; height:6px; background:var(--accent); border-radius:3px; }
+  dl { display:grid; grid-template-columns:150px 1fr; gap:4px 12px; margin:10px 0 6px; }
+  dt { color:var(--mute); } dd { margin:0; }
+  .viewer { background:#f7f9fc; border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin:8px 0; font-size:13px; }
+  .pips { font-variant-numeric:tabular-nums; color:var(--mute); }
+  .flags { color:var(--warn); font-size:13px; } .repairs { color:var(--mute); font-size:13px; }
+  details { margin-top:8px; } summary { cursor:pointer; color:var(--accent); }
+  table { width:100%; border-collapse:collapse; margin-top:6px; font-size:13px; }
+  td { border-top:1px solid var(--line); padding:4px 6px; vertical-align:top; }
+  td.t { width:52px; color:var(--mute); font-variant-numeric:tabular-nums; }
+  td.k { width:150px; color:var(--mute); }
+  tr.first3 td { background:var(--first3); } tr.hook td { background:var(--hook); font-weight:600; }
+  tr.cliff td { background:#fde8e8; font-weight:600; } tr.cut td { background:#eef1f6; color:var(--mute); font-size:12px; }
+  .decide { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:10px; }
+  .decide button { font:inherit; border:1px solid var(--line); background:#fff; border-radius:6px; padding:4px 10px; cursor:pointer; }
+  .decide button.on.approve { background:var(--ok); color:#fff; } .decide button.on.maybe { background:var(--warn); color:#fff; }
+  .decide button.on.reject { background:var(--bad); color:#fff; }
+  .decide input { flex:1; min-width:200px; font:inherit; border:1px solid var(--line); border-radius:6px; padding:4px 8px; }
+  .legend { color:var(--mute); font-size:12px; margin:0 0 12px; }
+  .legend span { padding:1px 6px; border-radius:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="h"></h1>
+  <p id="sub"></p>
+</header>
+<div class="bar" role="toolbar" aria-label="Filters">
+  <button data-f="post" aria-pressed="true">Post first</button>
+  <button data-f="all" aria-pressed="false">All promos</button>
+  <button data-f="open" aria-pressed="false">Undecided</button>
+  <button data-f="approve" aria-pressed="false">Approved</button>
+  <button data-f="reject" aria-pressed="false">Rejected</button>
+  <input id="q" type="search" placeholder="Search hooks, lines, episodes..." aria-label="Search">
+  <span class="spacer"></span>
+  <span class="count" id="count"></span>
+  <button id="export">Export decisions (CSV)</button>
+</div>
+<main>
+  <p class="legend">In each script: <span style="background:var(--first3)">first 3 seconds</span>
+    <span style="background:var(--hook)">hook</span> <span style="background:#fde8e8">cliffhanger</span>.
+    Times in the script are seconds from the start of the promo. Decisions are saved in this browser.</p>
+  <div id="list"></div>
+</main>
+<script type="application/json" id="data">/*__DATA__*/null</script>
+<script>
+const DATA = JSON.parse(document.getElementById('data').textContent);
+const KEY = 'promo-review:' + DATA.meta.show;
+const store = JSON.parse(localStorage.getItem(KEY) || '{}');
+let filter = 'post';
+const $ = (t, cls, txt) => { const e = document.createElement(t); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const fmt = s => { const m = Math.floor(s / 60), r = (s - 60 * m).toFixed(2).padStart(5, '0'); return String(m).padStart(2, '0') + ':' + r; };
+document.getElementById('h').textContent = 'Promo review: ' + DATA.meta.show;
+document.getElementById('sub').textContent = `${DATA.meta.episodes} episodes, ${Math.round(DATA.meta.runtime_s / 60)} min of script · ` +
+  `${DATA.meta.promos} promos · model ${DATA.meta.model} · fresh-viewer check ${DATA.meta.cold_model} · generated ${DATA.meta.generated}`;
+
+function save() { localStorage.setItem(KEY, JSON.stringify(store)); render(); }
+
+function card(p) {
+  const d = store[p.id] || {};
+  const c = $('article', 'card' + (d.decision ? ' ' + ({approve:'approved', reject:'rejected', maybe:'maybe'})[d.decision] : ''));
+  const top = $('div', 'top');
+  top.append($('span', 'rank', '#' + p.rank), $('span', 'title', p.title));
+  if (p.post_order) top.append($('span', 'tag post', 'post #' + p.post_order));
+  top.append($('span', 'tag' + (p.kind === 'montage' ? ' montage' : ''), p.kind === 'montage' ? 'cross-episode' : p.kind));
+  top.append($('span', 'tag', p.duration_s.toFixed(1) + ' s'), $('span', 'score', 'score ' + p.score.toFixed(2)));
+  c.append(top);
+
+  const segs = $('div', 'segs');
+  p.segments.forEach((s, i) => {
+    const box = $('div', 'seg');
+    const b = $('b', null, `Ep ${s.episode}  ${s.start} → ${s.end}`);
+    box.append(b, $('span', null, `  (${s.seconds.toFixed(1)} s)`));
+    const len = p.episode_lengths[s.episode] || s.end_s;
+    const tr = $('div', 'track'); const bar = $('span');
+    bar.style.left = (100 * s.start_s / len) + '%'; bar.style.width = Math.max(1, 100 * (s.end_s - s.start_s) / len) + '%';
+    tr.title = `position in episode ${s.episode} (${fmt(len)} long)`; tr.append(bar); box.append(tr);
+    segs.append(box);
+  });
+  c.append(segs);
+
+  const dl = $('dl');
+  const row = (k, v) => { if (v) { dl.append($('dt', null, k), $('dd', null, v)); } };
+  row('Hook' + (p.hook_at_s != null ? ` (at ${p.hook_at_s.toFixed(1)} s)` : ''), p.hook);
+  row('Cliffhanger', p.cliffhanger);
+  row('Why it works', p.why_it_works);
+  row('Why post first', p.why_post_first);
+  row('Needs context', p.context_gap);
+  c.append(dl);
+
+  const v = p.fresh_viewer || {};
+  if (v.what_happens) {
+    const box = $('div', 'viewer');
+    box.append($('div', null, 'Fresh viewer (never saw the show): ' + v.what_happens));
+    if (v.question_left) box.append($('div', null, 'Left asking: ' + v.question_left));
+    if (v.confusing) box.append($('div', null, 'Confused by: ' + v.confusing));
+    box.append($('div', 'pips', `hook ${v.hook}/5 · cliffhanger ${v.cliffhanger}/5 · clarity ${v.clarity}/5 · ` +
+      `stops scrolling: ${v.stop_scrolling ? 'yes' : 'no'} · wants next episode: ${v.want_next_episode ? 'yes' : 'no'}`));
+    c.append(box);
+  }
+  if (p.flags && p.flags.length) c.append($('div', 'flags', 'Problem: ' + p.flags.join('; ')));
+  if (p.notes && p.notes.length) c.append($('div', 'flags', 'Editor check: ' + p.notes.join('; ')));
+  if (p.repairs && p.repairs.length) c.append($('div', 'repairs', 'Code fixed: ' + p.repairs.join('; ')));
+
+  const det = $('details'); det.append($('summary', null, 'Script of this cut (' + p.excerpt.length + ' lines)'));
+  const tb = $('table'); let cut = 0;
+  p.excerpt.forEach(r => {
+    if (p.segments.length > 1 && r.cut !== cut) { cut = r.cut; const tr = $('tr', 'cut'); const td = $('td', null, `cut ${cut}: ${p.segments[cut - 1].start} → ${p.segments[cut - 1].end}, episode ${p.segments[cut - 1].episode}`); td.colSpan = 3; tr.append(td); tb.append(tr); }
+    const tr = $('tr', r.hook ? 'hook' : r.cliff ? 'cliff' : (r.t < 3 && r.cut === 1 ? 'first3' : ''));
+    const who = r.kind === 'dialogue' ? r.who + (r.how ? ` (${r.how})` : '') : ({camera:'SEE', action:'ACTION', sfx:'SOUND'})[r.kind] || r.kind;
+    tr.append($('td', 't', r.t.toFixed(1) + 's'), $('td', 'k', who), $('td', null, r.text));
+    tb.append(tr);
+  });
+  det.append(tb); c.append(det);
+
+  const dec = $('div', 'decide');
+  [['approve', 'Approve'], ['maybe', 'Maybe'], ['reject', 'Reject']].forEach(([k, label]) => {
+    const b = $('button', k + (d.decision === k ? ' on' : ''), label);
+    b.setAttribute('aria-pressed', d.decision === k ? 'true' : 'false');
+    b.onclick = () => { store[p.id] = Object.assign({}, store[p.id], {decision: d.decision === k ? null : k}); save(); };
+    dec.append(b);
+  });
+  const note = $('input'); note.placeholder = 'Note for the editor (e.g. trim 2 s at the end)'; note.value = d.note || '';
+  note.onchange = () => { store[p.id] = Object.assign({}, store[p.id], {note: note.value}); localStorage.setItem(KEY, JSON.stringify(store)); };
+  dec.append(note); c.append(dec);
+  return c;
+}
+
+function matches(p, q) {
+  if (!q) return true;
+  const hay = [p.title, p.hook, p.cliffhanger, p.why_it_works, p.segments.map(s => 'ep ' + s.episode).join(' '),
+               p.excerpt.map(r => r.text).join(' ')].join(' ').toLowerCase();
+  return q.toLowerCase().split(/\s+/).every(w => hay.includes(w));
+}
+
+function render() {
+  const q = document.getElementById('q').value.trim();
+  let items = DATA.promos.filter(p => matches(p, q));
+  if (filter === 'post') items = DATA.posting.map(id => items.find(p => p.id === id)).filter(Boolean);
+  if (filter === 'open') items = items.filter(p => !(store[p.id] || {}).decision);
+  if (filter === 'approve' || filter === 'reject') items = items.filter(p => (store[p.id] || {}).decision === filter);
+  const list = document.getElementById('list'); list.replaceChildren(...items.map(card));
+  const n = Object.values(store).filter(d => d.decision).length;
+  document.getElementById('count').textContent = `${items.length} shown · ${n} of ${DATA.promos.length} decided`;
+}
+
+document.querySelectorAll('.bar button[data-f]').forEach(b => b.onclick = () => {
+  filter = b.dataset.f; document.querySelectorAll('.bar button[data-f]').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); render();
+});
+document.getElementById('q').oninput = render;
+document.getElementById('export').onclick = () => {
+  const esc = s => '"' + String(s ?? '').replace(/"/g, '""') + '"';
+  const rows = [['id', 'rank', 'post_order', 'decision', 'note', 'segments', 'title']];
+  DATA.promos.forEach(p => { const d = store[p.id] || {};
+    rows.push([p.id, p.rank, p.post_order || '', d.decision || '', d.note || '',
+               p.segments.map(s => `Ep ${s.episode} ${s.start}-${s.end}`).join(' | '), p.title]); });
+  const blob = new Blob([rows.map(r => r.map(esc).join(',')).join('\n')], {type: 'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'promo_decisions.csv'; a.click();
+};
+render();
+</script>
+</body>
+</html>

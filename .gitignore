@@ -1,0 +1,9 @@
+# Kuku's input pack and anything derived from it stay out of the repo
+*.zip
+data/
+outputs/
+.cache/
+
+__pycache__/
+*.pyc
+.venv/

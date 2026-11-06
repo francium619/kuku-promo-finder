@@ -1,0 +1,94 @@
+EPISODE NUMBER: Episode 1
+EPISODE LOGLINE: At her engagement party, Mara learns her fiance has sold her late father's lighthouse, and a stranger walks in to claim it.
+CONTINUITY NOTES: First episode. Original sample written for tests; not from any real show.
+
+--- SCRIPT START ---
+
+SCENE 01
+Scene heading: INT. HARBOUR HALL – NIGHT
+Scene start: 00:00.00
+Scene end: 00:48.00
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (00:00.00) | End: (00:04.00)
+Wide shot of a crowded harbour hall strung with lanterns.
+
+**CAMERA:**
+Start: (00:04.00) | End: (00:07.50)
+Close-up on Mara raising a glass, smiling.
+
+**MARA (Joyful):**
+Start: (00:04.50) | End: (00:06.80)
+"To the lighthouse, and to us!"
+
+**CAMERA:**
+Start: (00:07.50) | End: (00:11.00)
+Medium shot of Theo lowering his glass, avoiding her eyes.
+
+**THEO (Cold, Flat):**
+Start: (00:08.00) | End: (00:10.60)
+"There is no lighthouse anymore, Mara."
+
+**CAMERA:**
+Start: (00:11.00) | End: (00:14.00)
+Close-up on Mara's smile freezing.
+
+**MARA (Shocked):**
+Start: (00:11.40) | End: (00:13.20)
+"What did you do?"
+
+**ACTION:**
+Start: (00:14.00) | End: (00:16.00)
+Theo slaps a signed deed onto the table.
+
+**CAMERA:**
+Start: (00:14.00) | End: (00:18.00)
+Insert of the signed deed, the ink still wet.
+
+**THEO (Smug):**
+Start: (00:15.00) | End: (00:17.80)
+"I sold it. This morning."
+
+**CAMERA:**
+Start: (00:18.00) | End: (00:23.00)
+Two-shot as the guests fall silent.
+
+**MARA (Trembling, Furious):**
+Start: (00:18.50) | End: (00:22.40)
+"My father died keeping that light burning!"
+
+**CAMERA:**
+Start: (00:23.00) | End: (00:28.00)
+Close-up on Theo, unmoved.
+
+**THEO (Dismissive):**
+Start: (00:23.40) | End: (00:27.50)
+"Your father is not here to stop me."
+
+**CAMERA:**
+Start: (00:28.00) | End: (00:34.00)
+Mara grips the edge of the table, knuckles white.
+
+**MARA (Defiant):**
+Start: (00:29.00) | End: (00:33.50)
+"Then I will stop you myself."
+
+**CAMERA:**
+Start: (00:34.00) | End: (00:40.00)
+The hall doors bang open; a stranger in a wet coat stands in the doorway.
+
+**SOUND FX:**
+Start: (00:34.00) | End: (00:36.00)
+Doors crash against the walls.
+
+**STRANGER (Calm, Menacing):**
+Start: (00:36.50) | End: (00:39.50)
+"Who sold my lighthouse?"
+
+**CAMERA:**
+Start: (00:40.00) | End: (00:48.00)
+Close-up on Theo's face draining of colour. Cut to black.
+
+--- SCRIPT END ---
